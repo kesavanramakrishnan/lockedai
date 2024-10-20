@@ -1,3 +1,6 @@
 opencv-python
 mediapipe
 numpy
+flask
+flask_cors
+pushover_complete

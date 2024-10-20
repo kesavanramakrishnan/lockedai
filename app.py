@@ -21,27 +21,6 @@ def index():
         return 'Notification sent!'
     return render_template('index.html')
 
-
-# import smtplib
-# from email.mime.text import MIMEText
-
-# def send_notification_to_iphone(message):
-#     smtp_server = 'smtp.gmail.com'
-#     smtp_port = 587
-#     sender_email = 'lockedincal11@gmail.com'
-#     receiver_email = 'kesavan6002@gmail.com'
-#     password = 'lockedin11'
-
-#     msg = MIMEText(message)
-#     msg['Subject'] = 'Notification from Flask'
-#     msg['From'] = sender_email
-#     msg['To'] = receiver_email
-
-#     with smtplib.SMTP(smtp_server, smtp_port) as server:
-#         server.starttls()
-#         server.login(sender_email, password)
-#         server.sendmail(sender_email, receiver_email, msg.as_string())
-#     print("Email sent successfully!")
 global user_key
 
 def send_notification_to_iphone(message):
@@ -49,8 +28,6 @@ def send_notification_to_iphone(message):
     api_token = 'axup77m6g6snv69v5n9vv2r68c8q16'
     pushover = PushoverAPI(api_token)
     pushover.send_message(user_key,message,title="Notification from Flask")
-    # pushover.send_message(message, device,user_key, title="Notification from Flask")
-
 
 # Initialize Mediapipe Face Mesh detector
 
@@ -69,28 +46,7 @@ focusTrack = True
 
 
 def euc_dist(p1, p2, w, h):
-        return np.sqrt((int(p1.x * w) - int(p2.x * w))**2 + (int(p1.y * h) - int(p2.y * h))**2)
-def eye_track():
-    # Initializing video and mesh model
-
-
-    # Calibration vars
-    calibration_frames = fps * 10
-    
-
-    
-
-    while True:
-        ret, frame = cap.read()
-        h, w, _ = frame.shape
-        if not ret:
-            print("Unable to retrieve webcam frame")
-            break
-        
-        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        mesh = face_mesh.process(rgb)
-        landmark_pts = mesh.multi_face_landmarks
-        
+        return np.sqrt((int(p1.x * w) - int(p2.x * w))**2 + (int(p1.y * h) - int(p2.y * h))**2)        
 
 def generate_frames():
     global baseline_eye_distance, baseline_face_width, calibrate_eye_distance_total, calibrate_face_width_total, frame_count
@@ -114,15 +70,10 @@ def generate_frames():
     sleep_threshold = 5 * fps
     sleeping = 0
     
-    counter = 0
     vert_dists = []
     hori_dists = []
     hori = None
     vert = None
-
-    u_count = 0
-    f_count = 0
-
 
     while True:
         
@@ -135,9 +86,7 @@ def generate_frames():
 
         # Process the frame to get landmarks
         results = face_mesh.process(rgb_frame)
-        landmark_pts = results.multi_face_landmarks
-        
-
+      
         h, w, _ = frame.shape
         global focusTrack
         global sleepTrack
@@ -219,10 +168,10 @@ def generate_frames():
 
 
                     if hori_c <= 0.77 * hori or vert_c <= 0.687 * vert:
-                        cv2.putText(frame, "Unfocused", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                        cv2.putText(frame, "Unfocused", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                         sleep_data.append(0)
                     else:
-                        cv2.putText(frame, "Focused", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+                        cv2.putText(frame, "Focused", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
                         sleep_data.append(1) 
 
         # Encode the frame in JPEG format
@@ -282,4 +231,3 @@ def resume_stream():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
